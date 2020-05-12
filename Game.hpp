@@ -22,6 +22,7 @@ struct Cell
 class Game
 {
 public:
+  void toggle_flag(const Cell::Index& index);
   // dbg
   void visit(Cell::Index ind) { visit_(&cells_[ind.i][ind.j] ); }
   ///
@@ -31,7 +32,7 @@ public:
   ~Game();
 private:
   void visit_(Cell *first);
-  void set_neighbor_bomb_();
+  void set_neighbor_bombs_();
   void plant_bombs_();
   Size size_;
   static const unsigned direction_num = 8;

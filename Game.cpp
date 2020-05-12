@@ -6,12 +6,20 @@
 
 #include "Game.hpp"
 
+void Game::toggle_flag(const Cell::Index& index)
+{
+  cells_[index.i][index.j].flagged ^= true;
+}
+
 void Game::print() const
 {
   for (const auto& row : cells_)
   {
     for (const auto& cell : row)
     {
+      if (cell.flagged)
+        std::cout << "\e[38;5;46m" << " f " << "\e[0m";
+      else
       if (cell.bombed)
         std::cout << "\e[38;5;196m" << " b " << "\e[0m";
       else
@@ -59,7 +67,7 @@ void Game::visit_(Cell *first)
   } 
 }
 
-void Game::set_neighbor_bomb_()
+void Game::set_neighbor_bombs_()
 {
   for (auto i = 0; i < size_.w; ++i)
     for (auto j = 0; j < size_.h; ++j)
@@ -113,7 +121,7 @@ Game::Game(Size size): size_(size), cells_(size.w)
     ++i;
   }
   plant_bombs_();
-  set_neighbor_bomb_();
+  set_neighbor_bombs_();
 }
 
 Game::~Game()
