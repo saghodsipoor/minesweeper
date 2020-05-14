@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 struct Direction {int i, j;}; 
@@ -22,12 +23,16 @@ struct Cell
 class Game
 {
 public:
+  const std::string cell_state(const Cell::Index& index) const;
   void toggle_flag(const Cell::Index& index);
   // dbg
   void visit(Cell::Index ind) { visit_(&cells_[ind.i][ind.j] ); }
   ///
   void print() const;
+  
   struct Size {unsigned w, h;};
+  Size size() const;
+
   Game(Size size = {9, 9});
   ~Game();
 private:

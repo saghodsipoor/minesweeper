@@ -6,6 +6,22 @@
 
 #include "Game.hpp"
 
+const std::string Game::cell_state(const Cell::Index& index) const
+{
+  const auto& cell = cells_[index.i][index.j];
+  
+  if (!cell.visitted)
+    return "unclicked";
+
+  if (cell.bombed)
+    return "bombed";
+  
+  if (cell.neighbor_bombs == 0)
+    return "blank";
+
+  return std::to_string(cell.neighbor_bombs);
+}
+
 void Game::toggle_flag(const Cell::Index& index)
 {
   cells_[index.i][index.j].flagged ^= true;
@@ -39,8 +55,10 @@ void Game::visit_(Cell *first)
   {
     auto& cell = to_visit.front();
     if (cell->bombed)
+    {
+      cell->visitted = true;
       break;
-    
+    }
     if (cell->neighbor_bombs != 0)
     {
       cell->visitted = true;
@@ -65,6 +83,11 @@ void Game::visit_(Cell *first)
     cell->visitted = true;
     to_visit.pop_front();
   } 
+}
+
+Game::Size Game::size() const 
+{
+  return size_;
 }
 
 void Game::set_neighbor_bombs_()

@@ -1,3 +1,9 @@
-test.cpp
+# directories
 .vscode
+build/
+
+# binaries
 main
+test
+
+test.cpp
