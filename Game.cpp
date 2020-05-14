@@ -10,12 +10,15 @@ const std::string Game::cell_state(const Cell::Index& index) const
 {
   const auto& cell = cells_[index.i][index.j];
   
+  if (cell.flagged)
+    return "flagged";
+
   if (!cell.visitted)
     return "unclicked";
 
+  // if visitted
   if (cell.bombed)
-    return "bombed";
-  
+    return "bomb-clicked";
   if (cell.neighbor_bombs == 0)
     return "blank";
 
@@ -50,6 +53,9 @@ void Game::print() const
 
 void Game::visit_(Cell *first)
 {
+  if (first->flagged)
+    return;
+
   std::list<Cell *> to_visit({first});
   while(to_visit.empty() == false)
   {

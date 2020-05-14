@@ -44,7 +44,7 @@ void Minesweeper::load_sprites_()
   sprites_.emplace("blank",     sp_blank);
   sprites_.emplace("flagged",   sp_flagged);
   sprites_.emplace("bombed",      sp_mine);
-  sprites_.emplace("mine-clicked", sp_mine_clicked);
+  sprites_.emplace("bomb-clicked", sp_mine_clicked);
 
 }
 
@@ -72,13 +72,14 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
       {
         struct {int i, j;} index =
           {event.mouseButton.x / 16 - 1, event.mouseButton.y / 16 - 1};
+        
         if (event.mouseButton.button == sf::Mouse::Left)
-        {
           game_.visit({index.i, index.j});
-          show_sprites_(window);
-        }
+
         if (event.mouseButton.button == sf::Mouse::Right)
           game_.toggle_flag({index.i, index.j});
+        
+        show_sprites_(window);
       }
     }
   }
