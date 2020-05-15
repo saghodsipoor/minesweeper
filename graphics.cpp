@@ -71,7 +71,10 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
       // r character == 0x72
       if (event.type == sf::Event::TextEntered)
         if (event.text.unicode == 0x72)
-          window.close();
+        {
+          game_.reset();
+          show_sprites_(window);
+        }
 
       if (event.type == sf::Event::MouseButtonPressed)
       {

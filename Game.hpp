@@ -23,6 +23,7 @@ struct Cell
 class Game
 {
 public:
+  void reset();
   void finish();
   bool is_game_on();
   const std::string cell_state(const Cell::Index& index) const;

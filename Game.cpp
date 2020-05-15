@@ -6,6 +6,24 @@
 
 #include "Game.hpp"
 
+void Game::reset()
+{
+  cells_.clear();
+  cells_.resize(size_.w);
+
+  int i = 0;
+  for (auto& row : cells_)
+  {
+    row.resize(size_.h);
+    int j = 0;
+    for (auto& cell : row)
+      cell.index.i = i, cell.index.j = j++;
+    ++i;
+  }
+  plant_bombs_();
+  set_neighbor_bombs_();
+  game_is_on_ = true;
+}
 
 void Game::finish()
 {
@@ -156,7 +174,7 @@ void Game::plant_bombs_()
 
 Game::Game(Size size): size_(size), cells_(size.w)
 {
-  int i = 0;;
+  int i = 0;
   for (auto& row : cells_)
   {
     row.resize(size.h);
