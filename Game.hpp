@@ -23,6 +23,8 @@ struct Cell
 class Game
 {
 public:
+  void finish();
+  bool is_game_on();
   const std::string cell_state(const Cell::Index& index) const;
   void toggle_flag(const Cell::Index& index);
   // dbg
@@ -43,6 +45,7 @@ private:
   static const unsigned direction_num = 8;
   const Direction dirs_[direction_num] =
     {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1,-1}, {1,0}, {1,1}};
+  bool game_is_on_ = true;
   std::vector<std::vector<Cell> > cells_;
 };
 

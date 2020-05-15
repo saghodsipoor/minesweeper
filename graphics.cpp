@@ -7,7 +7,7 @@
 
 void Minesweeper::show_sprites_(sf::RenderWindow& window)
 {
-  window.clear();
+  window.clear( {190, 190, 190} );
 
   struct {int x, y;} origin = {cell_width_, cell_width_};
 
@@ -67,9 +67,17 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
     {
       if (event.type == sf::Event::Closed)
         window.close();
+      
+      // r character == 0x72
+      if (event.type == sf::Event::TextEntered)
+        if (event.text.unicode == 0x72)
+          window.close();
 
       if (event.type == sf::Event::MouseButtonPressed)
       {
+        if (!game_.is_game_on())
+          break;
+
         struct {int i, j;} index =
           {event.mouseButton.x / 16 - 1, event.mouseButton.y / 16 - 1};
         

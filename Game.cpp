@@ -6,6 +6,17 @@
 
 #include "Game.hpp"
 
+
+void Game::finish()
+{
+  game_is_on_ = false;
+}
+
+bool Game::is_game_on() 
+{ 
+  return game_is_on_;
+}
+
 const std::string Game::cell_state(const Cell::Index& index) const
 {
   const auto& cell = cells_[index.i][index.j];
@@ -19,6 +30,7 @@ const std::string Game::cell_state(const Cell::Index& index) const
   // if visitted
   if (cell.bombed)
     return "bomb-clicked";
+
   if (cell.neighbor_bombs == 0)
     return "blank";
 
@@ -27,7 +39,9 @@ const std::string Game::cell_state(const Cell::Index& index) const
 
 void Game::toggle_flag(const Cell::Index& index)
 {
-  cells_[index.i][index.j].flagged ^= true;
+  auto& cell = cells_[index.i][index.j];
+  if (!cell.visitted)
+    cell.flagged ^= true;
 }
 
 void Game::print() const
@@ -55,7 +69,8 @@ void Game::visit_(Cell *first)
 {
   if (first->flagged)
     return;
-
+  
+  // if cell isn't flagged
   std::list<Cell *> to_visit({first});
   while(to_visit.empty() == false)
   {
@@ -63,6 +78,7 @@ void Game::visit_(Cell *first)
     if (cell->bombed)
     {
       cell->visitted = true;
+      game_is_on_ = false;
       break;
     }
     if (cell->neighbor_bombs != 0)
