@@ -51,8 +51,8 @@ void Minesweeper::load_sprites_()
 Minesweeper::Minesweeper(const Game& game): game_(game)
 {
 
-  unsigned w = (cell_width_ + 2) * game_.size().w; // 2 for border
-  unsigned h = (cell_width_ + 2) * game_.size().h; // 2 for border
+  unsigned w = cell_width_ * ( game_.size().w + 2); // 2 for border
+  unsigned h = cell_width_ * ( game_.size().h + 2); // 2 for border
   
   sf::RenderWindow window(sf::VideoMode(w, h), "Minesweeper",
     sf::Style::Titlebar | sf::Style::Close);
@@ -73,6 +73,11 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
         struct {int i, j;} index =
           {event.mouseButton.x / 16 - 1, event.mouseButton.y / 16 - 1};
         
+        // invalid cell
+        if (index.i < 0 || index.i >= game_.size().w ||
+          index.j < 0 || index.j >= game_.size().h)
+          continue;
+
         if (event.mouseButton.button == sf::Mouse::Left)
           game_.visit({index.i, index.j});
 
