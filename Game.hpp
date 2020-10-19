@@ -13,7 +13,7 @@ struct Cell
   {
     int i, j;
   };
-  Index index = {0, 0};
+  // Index index = {0, 0};
   bool visitted = false, bombed = false, flagged = false;
   unsigned neighbor_bombs = 0;
 };
@@ -28,7 +28,7 @@ public:
   const std::string cell_state(const Cell::Index& index) const;
   void toggle_flag(const Cell::Index& index);
   void visit(const Cell::Index& index);
-  void print() const;
+  void print();
   
   struct Size {unsigned w, h;};
   Size size() const;
@@ -36,17 +36,16 @@ public:
   Game(Size size = {9, 9});
   ~Game();
 private:
-  // void visit_(Cell *first);
   void set_neighbor_bombs_();
   void plant_bombs_();
   inline Cell& cell(const Cell::Index& index)
-  { return cells_[index.i][index.j]; }
+  { return board_[index.i * size_.w + index.j]; }
   Size size_;
   static const unsigned direction_num = 8;
   const Direction dirs_[direction_num] =
     {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1,-1}, {1,0}, {1,1}};
   bool game_is_on_ = true;
-  std::vector<std::vector<Cell> > cells_;
+  std::vector<Cell> board_;
 };
 
 

@@ -27,6 +27,9 @@ int main(int argv, char *argc[])
   }
 
   Game g({i, j});
+  //test
+  g.print();
+  //////
   Minesweeper mi(g);
 
   return 0;

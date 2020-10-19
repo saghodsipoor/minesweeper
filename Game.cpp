@@ -8,18 +8,8 @@
 
 void Game::reset()
 {
-  cells_.clear();
-  cells_.resize(size_.w);
-
-  int i = 0;
-  for (auto& row : cells_)
-  {
-    row.resize(size_.h);
-    int j = 0;
-    for (auto& cell : row)
-      cell.index.i = i, cell.index.j = j++;
-    ++i;
-  }
+  board_.clear();
+  board_.resize(size_.w * size_.h);
   plant_bombs_();
   set_neighbor_bombs_();
   game_is_on_ = true;
@@ -37,7 +27,7 @@ bool Game::game_is_on()
 
 const std::string Game::cell_state(const Cell::Index& index) const
 {
-  const auto& cell = cells_[index.i][index.j];
+  const auto& cell = board_[index.i * size_.w + index.j];
   
   if (cell.flagged)
     return "flagged";
@@ -57,17 +47,18 @@ const std::string Game::cell_state(const Cell::Index& index) const
 
 void Game::toggle_flag(const Cell::Index& index)
 {
-  auto& cell = cells_[index.i][index.j];
+  auto& cell = this->cell(index);
   if (!cell.visitted)
-    cell.flagged ^= true;
+    cell.flagged = !cell.flagged;
 }
 
-void Game::print() const
+void Game::print()
 {
-  for (const auto& row : cells_)
+  for (int i = 0; i < size_.w; ++i)
   {
-    for (const auto& cell : row)
+    for (int j = 0; j < size_.h; ++j)
     {
+      const auto& cell = this->cell({i,j});
       if (cell.flagged)
         std::cout << "\e[38;5;46m" << " f " << "\e[0m";
       else
@@ -97,15 +88,14 @@ void Game::visit(const Cell::Index& index)
     auto curr_index = to_visit.front();
     auto& curr_cell = cell(curr_index);
     curr_cell.visitted = true;
+
     if (curr_cell.bombed)
     {
-      // visiting_cell.visitted = true;
       game_is_on_ = false;
       break;
     }
     if (curr_cell.neighbor_bombs != 0)
     {
-      // visiting_cell.visitted = true;
       to_visit.pop_front();
       continue;
     }
@@ -124,7 +114,6 @@ void Game::visit(const Cell::Index& index)
       if (!cell({i,j}).visitted)
         to_visit.push_back({i,j});
     }
-    // cell->visitted = true;
     to_visit.pop_front();
   } 
 }
@@ -139,17 +128,18 @@ void Game::set_neighbor_bombs_()
   for (auto i = 0; i < size_.w; ++i)
     for (auto j = 0; j < size_.h; ++j)
     {
-      auto& cell = cells_[i][j];
+      // auto& cell = cells_[i][j];
       unsigned num = 0;
       for (auto dir = dirs_; dir < dirs_ + 8; ++dir)
       {
         if (i + dir->i < 0 || i + dir->i >= size_.w ||
           j + dir->j < 0 || j + dir->j >=size_.h)
           { continue; }
-        else if(cells_[i+dir->i][j+dir->j].bombed)
+        else
+        if(cell({i+dir->i, j+dir->j}).bombed)
           ++num;
       }
-      cell.neighbor_bombs = num;
+      cell({i,j}).neighbor_bombs = num;
     }
 }
 
@@ -173,20 +163,11 @@ void Game::plant_bombs_()
 
   // plant bombs for list of indices
   for (auto i = 0; i < bombs_num; ++i)
-    cells_[indices[i].i][indices[i].j].bombed = true;
+    cell(indices[i]).bombed = true;
 }
 
-Game::Game(Size size): size_(size), cells_(size.w)
+Game::Game(Size size): size_(size), board_(size.w * size.h)
 {
-  int i = 0;
-  for (auto& row : cells_)
-  {
-    row.resize(size.h);
-    int j = 0;
-    for (auto& cell : row)
-      cell.index.i = i, cell.index.j = j++;
-    ++i;
-  }
   plant_bombs_();
   set_neighbor_bombs_();
 }
