@@ -78,7 +78,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
 
       if (event.type == sf::Event::MouseButtonPressed)
       {
-        if (!game_.is_game_on())
+        if (!game_.game_is_on())
           break;
 
         struct {int i, j;} index =
@@ -91,7 +91,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
 
         if (event.mouseButton.button == sf::Mouse::Left)
           game_.visit({index.i, index.j});
-
+        else
         if (event.mouseButton.button == sf::Mouse::Right)
           game_.toggle_flag({index.i, index.j});
         

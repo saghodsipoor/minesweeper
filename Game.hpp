@@ -7,7 +7,6 @@
 
 struct Direction {int i, j;}; 
 
-
 struct Cell
 {
   struct Index
@@ -25,12 +24,10 @@ class Game
 public:
   void reset();
   void finish();
-  bool is_game_on();
+  bool game_is_on();
   const std::string cell_state(const Cell::Index& index) const;
   void toggle_flag(const Cell::Index& index);
-  // dbg
-  void visit(Cell::Index ind) { visit_(&cells_[ind.i][ind.j] ); }
-  ///
+  void visit(const Cell::Index& index);
   void print() const;
   
   struct Size {unsigned w, h;};
@@ -39,9 +36,11 @@ public:
   Game(Size size = {9, 9});
   ~Game();
 private:
-  void visit_(Cell *first);
+  // void visit_(Cell *first);
   void set_neighbor_bombs_();
   void plant_bombs_();
+  inline Cell& cell(const Cell::Index& index)
+  { return cells_[index.i][index.j]; }
   Size size_;
   static const unsigned direction_num = 8;
   const Direction dirs_[direction_num] =

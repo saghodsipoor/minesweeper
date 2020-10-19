@@ -30,7 +30,7 @@ void Game::finish()
   game_is_on_ = false;
 }
 
-bool Game::is_game_on() 
+bool Game::game_is_on() 
 { 
   return game_is_on_;
 }
@@ -83,25 +83,29 @@ void Game::print() const
   }
 }
 
-void Game::visit_(Cell *first)
+void Game::visit(const Cell::Index& index)
 {
-  if (first->flagged)
+  // auto first = &cells_[index.i][index.j];
+  auto first = index;
+  if (cell(first).flagged)
     return;
   
   // if cell isn't flagged
-  std::list<Cell *> to_visit({first});
-  while(to_visit.empty() == false)
+  std::list<Cell::Index> to_visit {first};
+  while(!to_visit.empty())
   {
-    auto& cell = to_visit.front();
-    if (cell->bombed)
+    auto curr_index = to_visit.front();
+    auto& curr_cell = cell(curr_index);
+    curr_cell.visitted = true;
+    if (curr_cell.bombed)
     {
-      cell->visitted = true;
+      // visiting_cell.visitted = true;
       game_is_on_ = false;
       break;
     }
-    if (cell->neighbor_bombs != 0)
+    if (curr_cell.neighbor_bombs != 0)
     {
-      cell->visitted = true;
+      // visiting_cell.visitted = true;
       to_visit.pop_front();
       continue;
     }
@@ -109,18 +113,18 @@ void Game::visit_(Cell *first)
     // checking neighbors' condition
     for (const auto& dir : dirs_)
     {
-      int i = cell->index.i + dir.i, j = cell->index.j + dir.j;
+      int i = curr_index.i + dir.i, j = curr_index.j + dir.j;
       // invalid index
       if (i < 0 || i >= size_.w || j < 0 || j >= size_.h)
         continue;
       
-      if (cells_[i][j].flagged)
+      if (cell({i,j}).flagged)
         continue;
       // blank cell
-      if (cells_[i][j].visitted == false)
-        to_visit.push_back(&cells_[i][j]);
+      if (!cell({i,j}).visitted)
+        to_visit.push_back({i,j});
     }
-    cell->visitted = true;
+    // cell->visitted = true;
     to_visit.pop_front();
   } 
 }

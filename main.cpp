@@ -1,12 +1,33 @@
+#include <cstdlib>
+
 #include <iostream>
+#include <string>
 
 #include "Game.hpp"
 #include "graphics.hpp"
 
-int main()
+int main(int argv, char *argc[])
 {
-  Game g1({10, 10});
-  Minesweeper mi(g1);
+  int i = 10, j = 10;
+  switch (argv)
+  {
+  case 1:
+    break;
+  
+  case 2:
+    i = atoi(argc[1]);
+    break;
+  
+  case 3:
+    i = atoi(argc[1]), j = atoi(argc[2]);
+    break;
+  
+  default:
+    break;
+  }
+
+  Game g({i, j});
+  Minesweeper mi(g);
 
   return 0;
 }

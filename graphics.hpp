@@ -15,9 +15,6 @@ public:
   ~Minesweeper();
 
 private:
-  // test
-  sf::Sprite sp_;
-  //
   void show_sprites_(sf::RenderWindow& window);
   void load_sprites_(); //2 53 135 33
 
