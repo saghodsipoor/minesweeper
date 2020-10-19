@@ -11,13 +11,12 @@ void Minesweeper::show_sprites_(sf::RenderWindow& window)
 
   struct {int x, y;} origin = {cell_width_, cell_width_};
 
-  for (int i = 0; i < game_.size().w; ++i)
-    for (int j = 0; j < game_.size().h; ++j)
-    {
-      auto state = game_.cell_state({i,j});
-      sprites_[state].setPosition(i*16 + origin.x, j*16 + origin.y);
-      window.draw(sprites_[state]);
-    }
+  game_.for_each_index([&](int i, int j){
+    auto state = game_.cell_state({i,j});
+    sprites_[state].setPosition(i*16 + origin.x, j*16 + origin.y);
+    window.draw(sprites_[state]);
+  });
+
   window.display();
 }
 
@@ -67,9 +66,8 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
       if (event.type == sf::Event::Closed)
         window.close();
       
-      // r character == 0x72
-      if (event.type == sf::Event::TextEntered)
-        if (event.text.unicode == 0x72)
+      if (event.type == sf::Event::KeyPressed)
+        if (event.key.code == sf::Keyboard::R)
         {
           game_.reset();
           show_sprites_(window);

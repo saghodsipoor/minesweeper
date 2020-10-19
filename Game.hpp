@@ -26,12 +26,15 @@ public:
   void finish();
   bool game_is_on();
   inline bool index_is_valid(const Index& index);
+  // gets a callable having two arguments int i and int j and calls it 
+  template <typename Callable> void for_each_index(const Callable& cb);
   const std::string cell_state(const Index& index) const;
   void toggle_flag(const Index& index);
   void visit(const Index& index);
   void print();
   
-  struct Size {unsigned w, h;};
+
+  struct Size {int w, h;};
   Size size() const;
 
   Game(Size size = {9, 9});
@@ -50,5 +53,12 @@ private:
   std::vector<Cell> board_;
 };
 
+template <typename Callable>
+void Game::for_each_index(const Callable& cb)
+{
+  for (auto i = 0; i < size_.w; ++i)
+    for (auto j = 0; j < size_.h; ++j)
+      cb(i,j);
+}
 
 #endif

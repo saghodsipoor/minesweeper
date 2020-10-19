@@ -81,7 +81,6 @@ void Game::print()
 
 void Game::visit(const Index& index)
 {
-  // auto first = &cells_[index.i][index.j];
   auto first = index;
   if (cell(first).flagged)
     return;
@@ -109,8 +108,6 @@ void Game::visit(const Index& index)
     for (const auto& dir : dirs_)
     {
       auto neighbor_index = curr_index + dir;
-      // int i = curr_index.i + dir.i, j = curr_index.j + dir.j;
-      // invalid index
       if (!index_is_valid(neighbor_index))
         continue;
       
@@ -131,21 +128,19 @@ Game::Size Game::size() const
 
 void Game::set_neighbor_bombs_()
 {
-  for (auto i = 0; i < size_.w; ++i)
-    for (auto j = 0; j < size_.h; ++j)
+  for_each_index([this](int i, int j){
+    unsigned num = 0;
+    for (const auto& dir : dirs_)
     {
-      unsigned num = 0;
-      for (const auto& dir : dirs_)
-      {
-        auto index = Index(i,j) + dir;
-        if (!index_is_valid(index))
-          { continue; }
-        else
-        if(cell(index).bombed)
-          ++num;
-      }
-      cell({i,j}).neighbor_bombs = num;
+      auto index = Index(i,j) + dir;
+      if (!index_is_valid(index))
+        { continue; }
+      else
+      if(cell(index).bombed)
+        ++num;
     }
+    cell({i,j}).neighbor_bombs = num;
+  });
 }
 
 void Game::plant_bombs_()
@@ -155,9 +150,9 @@ void Game::plant_bombs_()
   // make list of indices
   std::vector<Index> indices;
 
-  for (int i = 0; i < size_.w; ++i)
-    for (int j = 0; j < size_.h; ++j)
-      indices.push_back({i,j}); 
+  for_each_index([&indices](int i, int j){
+      indices.push_back({i,j});
+  });  
 
   // shuffle indices
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
