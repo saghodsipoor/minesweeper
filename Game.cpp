@@ -11,7 +11,7 @@ void Game::reset()
   board_.clear();
   board_.resize(size_.w * size_.h);
   plant_bombs_();
-  set_neighbor_bombs_();
+  set_cell_values();
   game_is_on_ = true;
 }
 
@@ -126,7 +126,7 @@ Game::Size Game::size() const
   return size_;
 }
 
-void Game::set_neighbor_bombs_()
+void Game::set_cell_values()
 {
   for_each_index([this](int i, int j){
     unsigned num = 0;
@@ -166,7 +166,7 @@ void Game::plant_bombs_()
 Game::Game(Size size) : size_(size), board_(size.w * size.h)
 {
   plant_bombs_();
-  set_neighbor_bombs_();
+  set_cell_values();
 }
 
 Game::~Game()

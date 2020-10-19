@@ -41,12 +41,11 @@ public:
   ~Game();
 
 private:
-  void set_neighbor_bombs_();
+  void set_cell_values();
   void plant_bombs_();
   inline Cell& cell(const Index& index)
   { return board_[index.i * size_.w + index.j]; }
   Size size_;
-  static const unsigned direction_num = 8;
   const std::vector<Index> dirs_
     {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1,-1}, {1,0}, {1,1}};
   bool game_is_on_ = true;
