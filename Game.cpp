@@ -26,20 +26,33 @@ inline bool Game::index_is_valid(const Index& index)
 const std::string Game::cell_state(const Index& index) const
 {
   const auto& cell = board_[index.i * size_.w + index.j];
-  
-  if (cell.flagged)
-    return "flagged";
+  if (state_ == On)
+  {
+    if (cell.flagged)
+      return "flagged";  
+    if (!cell.visitted)
+      return "unclicked";
+    // if visitted
+    if (cell.bombed)
+      return "bomb-clicked";
+  }
 
-  if (!cell.visitted)
-    return "unclicked";
+  if (state_ == Won)
+    if (cell.bombed)
+      return "flagged";
 
-  // if visitted
-  if (cell.bombed)
-    return "bomb-clicked";
+  if (state_ == Lost)
+  {
+    if (cell.bombed && cell.visitted)
+      return "bomb-clicked";
+    if (cell.bombed && !cell.visitted)
+      return "bombed";
+    if (cell.flagged && !cell.bombed)
+      return "false-flagged";
+  }
 
   if (cell.neighbor_bombs == 0)
-    return "blank";
-
+      return "blank";
   return std::to_string(cell.neighbor_bombs);
 }
 
@@ -68,10 +81,7 @@ void Game::visit(const Index& index)
     curr_cell.visitted = true;
 
     if (curr_cell.bombed)
-    {
-      // state_ = Lost;
       break;
-    }
     if (curr_cell.neighbor_bombs != 0)
     {
       to_visit.pop_front();

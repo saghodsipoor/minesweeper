@@ -5,12 +5,12 @@
 
 #include "graphics.hpp"
 
-void Minesweeper::show_sprites_(sf::RenderWindow& window)
+void Minesweeper::display(sf::RenderWindow& window)
 {
   window.clear( {190, 190, 190} );
 
   struct {int x, y;} origin = {cell_width_, cell_width_};
-  
+
   game_.for_each_index([&](int i, int j){
     auto state = game_.cell_state({i,j});
     sprites_[state].setPosition(i*16 + origin.x, j*16 + origin.y);
@@ -20,7 +20,7 @@ void Minesweeper::show_sprites_(sf::RenderWindow& window)
   window.display();
 }
 
-void Minesweeper::load_sprites_()
+void Minesweeper::load_sprites()
 { 
   if (!sprite_sheet_.loadFromFile("sprites/sprites.png",
     sf::IntRect(2, 53, 135, 33) ))
@@ -38,12 +38,14 @@ void Minesweeper::load_sprites_()
   sf::Sprite sp_flagged     (sprite_sheet_, sf::IntRect(34,0,16,16));
   sf::Sprite sp_mine        (sprite_sheet_, sf::IntRect(85,0,16,16));
   sf::Sprite sp_mine_clicked(sprite_sheet_, sf::IntRect(102,0,16,16));
+  sf::Sprite sp_false_flagged(sprite_sheet_, sf::IntRect(119,0,16,16));
   
   sprites_.emplace("unclicked",     sp_unclicked);
   sprites_.emplace("blank",         sp_blank);
   sprites_.emplace("flagged",       sp_flagged);
   sprites_.emplace("bombed",        sp_mine);
   sprites_.emplace("bomb-clicked",  sp_mine_clicked);
+  sprites_.emplace("false-flagged", sp_false_flagged);
 }
 
 Minesweeper::Minesweeper(const Game& game): game_(game)
@@ -55,8 +57,8 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
   sf::RenderWindow window(sf::VideoMode(w, h), "Minesweeper",
     sf::Style::Titlebar | sf::Style::Close);
   
-  load_sprites_();
-  show_sprites_(window);
+  load_sprites();
+  display(window);
 
   while (window.isOpen())
   {
@@ -70,7 +72,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
         if (event.key.code == sf::Keyboard::R)
         {
           game_.reset();
-          show_sprites_(window);
+          display(window);
         }
 
       if (event.type == sf::Event::MouseButtonPressed)
@@ -91,7 +93,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
         if (event.mouseButton.button == sf::Mouse::Right)
           game_.toggle_flag(index);
         
-        show_sprites_(window);
+        display(window);
       }
     }
   }

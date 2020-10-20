@@ -13,13 +13,17 @@ public:
     int i, j;
     Index(int i, int j) : i(i), j(j) {}
   };
+  friend Index operator+(const Index& lhs, const Index& rhs)
+  { return {lhs.i + rhs.i,  lhs.j + rhs.j}; }
+
   struct Cell
   {
     bool visitted = false, bombed = false, flagged = false;
     unsigned neighbor_bombs = 0;
   };
-  friend Index operator+(const Index& lhs, const Index& rhs)
-  { return {lhs.i + rhs.i,  lhs.j + rhs.j}; }
+
+  struct Size {int w, h;};
+  
   enum GameState {On, Won, Lost};
 
   void reset();
@@ -32,10 +36,9 @@ public:
   void visit(const Index& index);
   void print();
   
-
-  struct Size {int w, h;};
   Size size() const;
-
+  GameState state() const { return state_; }
+  
   Game(Size size = {9, 9});
   ~Game();
 
@@ -50,7 +53,6 @@ private:
   int bombs_num_ = 0;
   const std::vector<Index> dirs_
     {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1,-1}, {1,0}, {1,1}};
-  // bool game_is_on_ = true;
   GameState state_ = On;
   std::vector<Cell> board_;
 };
