@@ -5,6 +5,50 @@
 
 #include "graphics.hpp"
 
+void Minesweeper::start()
+{
+  int w = cell_width_ * ( game_.size().w + 2); // 2 for border
+  int h = cell_width_ * ( game_.size().h + 2); // 2 for border
+
+  window_.create(sf::VideoMode(w, h), "Minesweeper",
+    sf::Style::Titlebar | sf::Style::Close);
+
+  while (window_.isOpen())
+  {
+    sf::Event event;
+    while (window_.pollEvent(event))
+    {
+      if (event.type == sf::Event::Closed)
+        window_.close();
+      else
+      if (event.type == sf::Event::KeyPressed)
+      {
+        if (event.key.code == sf::Keyboard::R)
+        game_.reset();
+      }
+      else
+      if (event.type == sf::Event::MouseButtonPressed)
+      {
+        if (!game_.is_on())
+          break;
+
+        Game::Index index =
+          {event.mouseButton.x / 16 - 1, event.mouseButton.y / 16 - 1};
+        
+        if (!game_.index_is_valid(index))
+          break;
+
+        if (event.mouseButton.button == sf::Mouse::Left)
+          game_.visit(index);
+        else
+        if (event.mouseButton.button == sf::Mouse::Right)
+          game_.toggle_flag(index); 
+      }
+    }
+    display();
+  }
+}
+
 void Minesweeper::display()
 {
   window_.clear( {190, 190, 190} );
@@ -50,56 +94,7 @@ void Minesweeper::load_sprites()
 
 Minesweeper::Minesweeper(const Game& game) : game_(game)
 {
-
-  int w = cell_width_ * ( game_.size().w + 2); // 2 for border
-  int h = cell_width_ * ( game_.size().h + 2); // 2 for border
-  
-  // sf::RenderWindow window(sf::VideoMode(w, h), "Minesweeper",
-  //   sf::Style::Titlebar | sf::Style::Close);
-
-  window_.create(sf::VideoMode(w, h), "Minesweeper",
-    sf::Style::Titlebar | sf::Style::Close);
-  
   load_sprites();
-  display();
-
-  while (window_.isOpen())
-  {
-    sf::Event event;
-    while (window_.pollEvent(event))
-    {
-      if (event.type == sf::Event::Closed)
-        window_.close();
-      
-      if (event.type == sf::Event::KeyPressed)
-        if (event.key.code == sf::Keyboard::R)
-        {
-          game_.reset();
-          display();
-        }
-
-      if (event.type == sf::Event::MouseButtonPressed)
-      {
-        if (!game_.is_on())
-          break;
-
-        Game::Index index =
-          {event.mouseButton.x / 16 - 1, event.mouseButton.y / 16 - 1};
-        
-        // invalid cell
-        if (!game_.index_is_valid(index))
-          continue;
-
-        if (event.mouseButton.button == sf::Mouse::Left)
-          game_.visit(index);
-        else
-        if (event.mouseButton.button == sf::Mouse::Right)
-          game_.toggle_flag(index);
-        
-        display();
-      }
-    }
-  }
 }
 
 Minesweeper::~Minesweeper()

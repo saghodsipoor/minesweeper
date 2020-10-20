@@ -11,6 +11,8 @@
 class Minesweeper
 {
 public:
+  void start();
+  
   Minesweeper(const Game& game = Game());
   ~Minesweeper();
 
