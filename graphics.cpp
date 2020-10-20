@@ -5,19 +5,19 @@
 
 #include "graphics.hpp"
 
-void Minesweeper::display(sf::RenderWindow& window)
+void Minesweeper::display()
 {
-  window.clear( {190, 190, 190} );
+  window_.clear( {190, 190, 190} );
 
   struct {int x, y;} origin = {cell_width_, cell_width_};
 
   game_.for_each_index([&](int i, int j){
     auto state = game_.cell_state({i,j});
     sprites_[state].setPosition(i*16 + origin.x, j*16 + origin.y);
-    window.draw(sprites_[state]);
+    window_.draw(sprites_[state]);
   });
 
-  window.display();
+  window_.display();
 }
 
 void Minesweeper::load_sprites()
@@ -48,31 +48,34 @@ void Minesweeper::load_sprites()
   sprites_.emplace("false-flagged", sp_false_flagged);
 }
 
-Minesweeper::Minesweeper(const Game& game): game_(game)
+Minesweeper::Minesweeper(const Game& game) : game_(game)
 {
 
   int w = cell_width_ * ( game_.size().w + 2); // 2 for border
   int h = cell_width_ * ( game_.size().h + 2); // 2 for border
   
-  sf::RenderWindow window(sf::VideoMode(w, h), "Minesweeper",
+  // sf::RenderWindow window(sf::VideoMode(w, h), "Minesweeper",
+  //   sf::Style::Titlebar | sf::Style::Close);
+
+  window_.create(sf::VideoMode(w, h), "Minesweeper",
     sf::Style::Titlebar | sf::Style::Close);
   
   load_sprites();
-  display(window);
+  display();
 
-  while (window.isOpen())
+  while (window_.isOpen())
   {
     sf::Event event;
-    while (window.pollEvent(event))
+    while (window_.pollEvent(event))
     {
       if (event.type == sf::Event::Closed)
-        window.close();
+        window_.close();
       
       if (event.type == sf::Event::KeyPressed)
         if (event.key.code == sf::Keyboard::R)
         {
           game_.reset();
-          display(window);
+          display();
         }
 
       if (event.type == sf::Event::MouseButtonPressed)
@@ -93,7 +96,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
         if (event.mouseButton.button == sf::Mouse::Right)
           game_.toggle_flag(index);
         
-        display(window);
+        display();
       }
     }
   }

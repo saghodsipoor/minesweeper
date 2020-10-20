@@ -15,7 +15,7 @@ public:
   ~Minesweeper();
 
 private:
-  void display(sf::RenderWindow& window);
+  void display();
   void load_sprites(); //2 53 135 33
 
   static constexpr unsigned cell_width_ = 16;

@@ -61,9 +61,8 @@ void Game::toggle_flag(const Index& index)
   auto& cell = this->cell(index);
   if (!cell.visitted)
     cell.flagged = !cell.flagged;
-  //dev
+  
   set_game_state();
-  /////
 }
 
 void Game::visit(const Index& index)
@@ -103,9 +102,7 @@ void Game::visit(const Index& index)
     }
     to_visit.pop_front();
   }
-  //dev
   set_game_state();
-  /////
 }
 
 void Game::print()
@@ -206,11 +203,6 @@ void Game::set_game_state()
   if ((bombs_flagged == bombs_num_ && !fake_flagged) ||
     non_bombs_visited == size_.w * size_.h - bombs_num_)
     state_ = Won;
-  //test
-  std::cout << "flagged: " << bombs_flagged << '\n'; 
-  std::cout << "visited: " << non_bombs_visited << '\n'; 
-  std::cout << "faked:   " << std::string { !fake_flagged? "false" : "true"} << '\n'; 
-  //////
 }
 
 Game::Game(Size size) : size_(size), board_(size.w * size.h)
