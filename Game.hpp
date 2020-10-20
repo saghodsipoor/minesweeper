@@ -18,13 +18,12 @@ public:
     bool visitted = false, bombed = false, flagged = false;
     unsigned neighbor_bombs = 0;
   };
-
   friend Index operator+(const Index& lhs, const Index& rhs)
   { return {lhs.i + rhs.i,  lhs.j + rhs.j}; }
+  enum GameState {On, Won, Lost};
 
   void reset();
-  void finish();
-  bool game_is_on();
+  bool is_on() { return state_ == On; }
   inline bool index_is_valid(const Index& index);
   // gets a callable having two arguments int i and int j and calls it 
   template <typename Callable> void for_each_index(const Callable& cb);
@@ -42,22 +41,26 @@ public:
 
 private:
   void set_cell_values();
-  void plant_bombs_();
-  inline Cell& cell(const Index& index)
+  void plant_bombs();
+  void set_game_state();
+  Cell& cell(const Index& index)
   { return board_[index.i * size_.w + index.j]; }
+  
   Size size_;
+  int bombs_num_ = 0;
   const std::vector<Index> dirs_
     {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1,-1}, {1,0}, {1,1}};
-  bool game_is_on_ = true;
+  // bool game_is_on_ = true;
+  GameState state_ = On;
   std::vector<Cell> board_;
 };
 
 template <typename Callable>
-void Game::for_each_index(const Callable& cb)
+void Game::for_each_index(const Callable& callback)
 {
   for (auto i = 0; i < size_.w; ++i)
     for (auto j = 0; j < size_.h; ++j)
-      cb(i,j);
+      callback(i,j);
 }
 
 #endif

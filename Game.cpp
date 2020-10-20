@@ -4,25 +4,18 @@
 #include <random>
 #include <vector>
 
+//test
+#include <iostream>
+//////
 #include "Game.hpp"
 
 void Game::reset()
 {
   board_.clear();
   board_.resize(size_.w * size_.h);
-  plant_bombs_();
+  plant_bombs();
   set_cell_values();
-  game_is_on_ = true;
-}
-
-void Game::finish()
-{
-  game_is_on_ = false;
-}
-
-bool Game::game_is_on() 
-{ 
-  return game_is_on_;
+  state_ = On;
 }
 
 inline bool Game::index_is_valid(const Index& index)
@@ -55,6 +48,54 @@ void Game::toggle_flag(const Index& index)
   auto& cell = this->cell(index);
   if (!cell.visitted)
     cell.flagged = !cell.flagged;
+  //dev
+  set_game_state();
+  /////
+}
+
+void Game::visit(const Index& index)
+{
+  auto first = index;
+  if (cell(first).flagged)
+    return;
+  
+  // if cell isn't flagged
+  std::list<Index> to_visit {first};
+  while(!to_visit.empty())
+  {
+    auto curr_index = to_visit.front();
+    auto& curr_cell = cell(curr_index);
+    curr_cell.visitted = true;
+
+    if (curr_cell.bombed)
+    {
+      // state_ = Lost;
+      break;
+    }
+    if (curr_cell.neighbor_bombs != 0)
+    {
+      to_visit.pop_front();
+      continue;
+    }
+    
+    // checking neighbors' condition
+    for (const auto& dir : dirs_)
+    {
+      auto neighbor_index = curr_index + dir;
+      if (!index_is_valid(neighbor_index))
+        continue;
+      
+      if (cell(neighbor_index).flagged)
+        continue;
+      // blank cell
+      if (!cell(neighbor_index).visitted)
+        to_visit.push_back(neighbor_index);
+    }
+    to_visit.pop_front();
+  }
+  //dev
+  set_game_state();
+  /////
 }
 
 void Game::print()
@@ -79,48 +120,6 @@ void Game::print()
   }
 }
 
-void Game::visit(const Index& index)
-{
-  auto first = index;
-  if (cell(first).flagged)
-    return;
-  
-  // if cell isn't flagged
-  std::list<Index> to_visit {first};
-  while(!to_visit.empty())
-  {
-    auto curr_index = to_visit.front();
-    auto& curr_cell = cell(curr_index);
-    curr_cell.visitted = true;
-
-    if (curr_cell.bombed)
-    {
-      game_is_on_ = false;
-      break;
-    }
-    if (curr_cell.neighbor_bombs != 0)
-    {
-      to_visit.pop_front();
-      continue;
-    }
-    
-    // checking neighbors' condition
-    for (const auto& dir : dirs_)
-    {
-      auto neighbor_index = curr_index + dir;
-      if (!index_is_valid(neighbor_index))
-        continue;
-      
-      if (cell(neighbor_index).flagged)
-        continue;
-      // blank cell
-      if (!cell(neighbor_index).visitted)
-        to_visit.push_back(neighbor_index);
-    }
-    to_visit.pop_front();
-  } 
-}
-
 Game::Size Game::size() const 
 {
   return size_;
@@ -143,9 +142,9 @@ void Game::set_cell_values()
   });
 }
 
-void Game::plant_bombs_()
+void Game::plant_bombs()
 {
-  unsigned bombs_num = size_.h * size_.w / 10;
+  bombs_num_ = size_.h * size_.w / 10;
   
   // make list of indices
   std::vector<Index> indices;
@@ -159,13 +158,54 @@ void Game::plant_bombs_()
   std::shuffle(indices.begin(), indices.end(), std::default_random_engine(seed));
 
   // plant bombs for list of indices
-  for (auto i = 0; i < bombs_num; ++i)
+  for (auto i = 0; i < bombs_num_; ++i)
     cell(indices[i]).bombed = true;
+}
+
+void Game::set_game_state()
+{
+  auto bombs_flagged = 0, non_bombs_visited = 0;
+  auto fake_flagged = false;
+  for (int i = 0; i < size_.w; ++i)
+  {
+    if (fake_flagged)
+      break;
+    for (int j = 0; j < size_.h; ++j)
+    {
+      auto& cell = this->cell({i,j});
+      
+      if (cell.visitted && cell.bombed)
+      {
+        state_ = Lost;
+        return;
+      }
+
+      if (cell.visitted && !cell.bombed)
+        ++non_bombs_visited;
+      else
+      if (cell.flagged && cell.bombed)
+        ++bombs_flagged;
+      else
+      if (cell.flagged && !cell.bombed)
+      {
+        fake_flagged = true; 
+        break;
+      }
+    }
+  }
+  if ((bombs_flagged == bombs_num_ && !fake_flagged) ||
+    non_bombs_visited == size_.w * size_.h - bombs_num_)
+    state_ = Won;
+  //test
+  std::cout << "flagged: " << bombs_flagged << '\n'; 
+  std::cout << "visited: " << non_bombs_visited << '\n'; 
+  std::cout << "faked:   " << std::string { !fake_flagged? "false" : "true"} << '\n'; 
+  //////
 }
 
 Game::Game(Size size) : size_(size), board_(size.w * size.h)
 {
-  plant_bombs_();
+  plant_bombs();
   set_cell_values();
 }
 

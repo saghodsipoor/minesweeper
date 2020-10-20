@@ -10,7 +10,7 @@ void Minesweeper::show_sprites_(sf::RenderWindow& window)
   window.clear( {190, 190, 190} );
 
   struct {int x, y;} origin = {cell_width_, cell_width_};
-
+  
   game_.for_each_index([&](int i, int j){
     auto state = game_.cell_state({i,j});
     sprites_[state].setPosition(i*16 + origin.x, j*16 + origin.y);
@@ -75,7 +75,7 @@ Minesweeper::Minesweeper(const Game& game): game_(game)
 
       if (event.type == sf::Event::MouseButtonPressed)
       {
-        if (!game_.game_is_on())
+        if (!game_.is_on())
           break;
 
         Game::Index index =
