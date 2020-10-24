@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Game.hpp"
-#include "graphics.hpp"
+#include "Minesweeper.hpp"
 
 int main(int argv, char *argc[])
 {

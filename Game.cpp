@@ -4,10 +4,8 @@
 #include <random>
 #include <vector>
 
-//test
-#include <iostream>
-//////
 #include "Game.hpp"
+
 
 void Game::reset()
 {
