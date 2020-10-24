@@ -1,7 +1,7 @@
 # minesweeper
 Minesweeper game implemented by C++ and SFML for Linux (Tested on Ubuntu 16.04)
 
-![demo](https://github.com/saghodsipoor/minesweeper/blob/readme/demo.gif?raw=true "Demo")
+![demo](https://github.com/saghodsipoor/minesweeper/blob/master/demo.gif?raw=true "Demo")
 
 **Building and Running**
 
